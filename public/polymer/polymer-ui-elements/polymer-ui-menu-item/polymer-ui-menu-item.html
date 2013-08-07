@@ -1,0 +1,26 @@
+<!--
+Copyright 2013 The Toolkitchen Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer UI Elements
+ */
+/**
+ * @class polymer-ui-menu-item
+ */
+-->
+<link rel="import" href="../polymer-ui-icon/polymer-ui-icon.html">
+<link rel="import" href="../polymer-ui-theme-aware/polymer-ui-theme-aware.html">
+
+<polymer-element name="polymer-ui-menu-item" extends="polymer-ui-theme-aware" attributes="src label icon">
+  <template>
+    <link rel="stylesheet" href="polymer-ui-menu-item.css">
+    <polymer-ui-icon src="{{src}}" icon="{{icon}}" showing?="{{icon || src}}"></polymer-ui-icon>
+    <span id="label">{{label}}<content></content></span>
+  </template>
+  <script>
+    Polymer('polymer-ui-menu-item');
+  </script>
+</polymer-element>
