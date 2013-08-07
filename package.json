@@ -1,0 +1,24 @@
+{
+  "name": "flownote",
+  "version": "0.0.1",
+  "description": "A usable tool to design workflow",
+  "keywords": [
+    "web"
+  ],
+  "author": {
+    "name": "Fred Chien(錢逢祥)",
+    "email": "fred@mandice.com",
+    "web": "http://fred-zone.blogspot.com/"
+  },
+  "license": "MIT",
+  "directories": {
+    "tests": "lib"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "frex.js": ">= 0.0.7"
+  },
+  "main": "./app.js"
+}
