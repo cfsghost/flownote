@@ -151,27 +151,46 @@ html
 					}
 				});
 
+		polymer-element(name='flownote-flow')
+			template
 
-		//
-			polymer-ui-submenu-item(icon='tag', label='Subject', active)
+				polymer-ui-menu(theme='polymer-ui-dark-theme')
 
-		polymer-ui-menu(theme='polymer-ui-dark-theme')
+					flownote-flow-submenu#flownote_flow(icon='tag', label='Subject', active)
 
-			flownote-flow-submenu(icon='tag', label='Subject', active)
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
-				flownote-flow-item(icon='settings', label='TEST')
+						template(repeat='{{ model.items }}')
+
+							flownote-flow-item(icon='{{ icon }}', label='{{ label }}')
+
+			script
+
+				Polymer('flownote-flow', {
+					model: {
+						items: [
+							{ icon: 'settings', label: 'Hello' },
+							{ icon: 'settings', label: 'Hello' }
+						]
+					},
+					ready: function() {
+						var self = this;
+					},
+					addItem: function(item) {
+						this.model.items.push(item);
+					}
+				});
+
+		flownote-flow
 
 		script
 
 			window.addEventListener('WebComponentsReady', function() {
+
+				var flow = document.querySelector('flownote-flow');
+
+				// Initializing hotkey
 				$(window).on('keyup', function(e) {
 					if (e.keyCode == 13) {
-						console.log('sdfasdfasdf');
+						flow.addItem({ icon: 'tag', label: 'Fred' });
 					}
 				});
 			});
