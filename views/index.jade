@@ -33,11 +33,11 @@ html
 
 				link(rel='stylesheet', href='/polymer/polymer-ui-elements/polymer-ui-submenu-item/polymer-ui-submenu-item.css')
 
-				div#labelItem
+				div#labelItem( class='{{ editmode ? \'hide\' : \'\' }}')
 					polymer-ui-menu-item#item(icon='{{icon}}', label='{{label}}', active?='{{active}}', on-tap='activate')
 						content(select='.item-content')
 
-				input#labelInput.hide(value='{{label}}', on-keyup='keyup')
+				input#labelInput(value='{{label}}', class='{{ editmode ? \'\' : \'hide\' }}', on-keyup='keyup')
 
 				polymer-ui-menu#menu(selected='{{selected}}', selectedItem='{{selectedItem}}')
 					content
@@ -62,27 +62,16 @@ html
 
 						if (this.editmode) {
 							this.originalLabel = this.label;
-							this.$.labelItem.className = 'hide';
-							this.$.labelInput.className = '';
-							this.$.labelInput.select();
-							this.$.labelInput.focus();
-						} else {
-							this.$.labelItem.className = '';
-							this.$.labelInput.className = 'hide';
+							this.asyncMethod(function() {
+								this.$.labelInput.select();
+								this.$.labelInput.focus();
+							}.bind(this));
 						}
 
 						this.fire('editmode', { enabled: this.editmode });
 					},
 					activate: function() {
-					/*
-						if (this.hasItems() && this.active) {
-							//this.collapsed = !this.collapsed;
-							//this.unselectAllItems();
-							//this.fire('polymer-select', {isSelected: true, item: this});
-						}
-						//this.super();
-						return;
-					*/
+
 						// Switch to editmode
 						if ($(this).hasClass('polymer-selected')) {
 							this.editmode = true;
@@ -122,11 +111,11 @@ html
 						border-radius: 3px;
 					}
 
-				div#labelItem
+				div#labelItem(class='{{ editmode ? \'hide\' : \'\' }}')
 					polymer-ui-menu-item(icon='{{icon}}', label='{{label}}', active?='{{active}}', on-click='setFocus')
 						content
 
-				input#labelInput.hide(value='{{label}}', on-keyup='keyup')
+				input#labelInput(value='{{label}}', class='{{ editmode ? \'\' : \'hide\' }}', on-keyup='keyup')
 
 			script
 				Polymer('flownote-flow-item', {
@@ -147,13 +136,10 @@ html
 
 						if (this.editmode) {
 							this.originalLabel = this.label;
-							this.$.labelItem.className = 'hide';
-							this.$.labelInput.className = '';
-							this.$.labelInput.select();
-							this.$.labelInput.focus();
-						} else {
-							this.$.labelItem.className = '';
-							this.$.labelInput.className = 'hide';
+							this.asyncMethod(function() {
+								this.$.labelInput.select();
+								this.$.labelInput.focus();
+							}.bind(this));
 						}
 
 						this.fire('editmode', { enabled: this.editmode });
@@ -205,13 +191,25 @@ html
 					setEditmode: function(e) {
 						this.hookmode = e.detail.enabled;
 					},
-					addItem: function(pos, item) {
+					addItem: function(pos, item, selected, editmode) {
 						this.model.items.splice(pos, 0, item);
 
 						Platform.performMicrotaskCheckpoint();
 
 						// Resize flow size
-						this.$.flownote_flow.update();
+						var flow = this.$.flownote_flow;
+						flow.update();
+
+						// Select this item automatically
+						if (selected) {
+							flow.selected = pos;
+						}
+
+						// Switch to edit mode automatically
+						if (editmode) {
+
+							flow.items[flow.selected].editmode = true;
+						}
 					},
 					keyup: function(e) {
 
@@ -219,16 +217,13 @@ html
 
 							// Add item at specific position
 							var flow = this.$.flownote_flow;
+							var item = { icon: '', label: '' };
 							if (flow.selected == null) {
-								this.addItem(flow.hasItems() + 1, { icon: '', label: '' });
-								flow.selected = flow.hasItems() + 1;
+								this.addItem(flow.items.length, item, true, true);
 							} else {
-								this.addItem(flow.selected + 1, { icon: '', label: '' });
-								flow.selected++;
+								this.addItem(flow.selected + 1, item, true, true);
 							}
 
-							// Switch to edit mode automatically
-							flow.items[flow.selected].editmode = true;
 						}
 					}
 				});
