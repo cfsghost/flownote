@@ -205,8 +205,8 @@ html
 					setEditmode: function(e) {
 						this.hookmode = e.detail.enabled;
 					},
-					addItem: function(item) {
-						this.model.items.push(item);
+					addItem: function(pos, item) {
+						this.model.items.splice(pos, 0, item);
 
 						Platform.performMicrotaskCheckpoint();
 
@@ -214,8 +214,16 @@ html
 						this.$.flownote_flow.update();
 					},
 					keyup: function(e) {
+
 						if (!this.hookmode && e.keyCode == 13) {
-							this.addItem({ icon: 'tag', label: 'Fred' });
+							// Add item at specific position
+							if (this.$.flownote_flow.selected == null) {
+								this.addItem(this.$.flownote_flow.hasItems() + 1, { icon: 'tag', label: 'Fred' });
+								this.$.flownote_flow.selected = this.$.flownote_flow.hasItems() + 1;
+							} else {
+								this.addItem(this.$.flownote_flow.selected + 1, { icon: 'tag', label: 'Fred' });
+								this.$.flownote_flow.selected++;
+							}
 						}
 					}
 				});
