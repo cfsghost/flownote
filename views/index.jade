@@ -42,15 +42,12 @@ html
 				polymer-ui-menu#menu(selected='{{selected}}', selectedItem='{{selectedItem}}')
 					content
 
-				polymer-collapse(targetId='menu', closed='{{collapsed}}', defaultClosed)
+				polymer-collapse#collapseComp(targetId='menu', closed='{{collapsed}}', defaultClosed)
 
 			script
 
 				Polymer('flownote-flow-submenu', {
 					active: false,
-					collapsed: true,
-					selected: null,
-					selectedItem: null,
 					ready: function() {
 						var self = this;
 						self.$.labelInput.addEventListener('blur', function(e) {
@@ -62,7 +59,15 @@ html
 						
 					},
 					activate: function() {
-
+					/*
+						if (this.hasItems() && this.active) {
+							//this.collapsed = !this.collapsed;
+							//this.unselectAllItems();
+							//this.fire('polymer-select', {isSelected: true, item: this});
+						}
+						//this.super();
+						return;
+					*/
 						// Switch to editmode
 						if ($(this).hasClass('polymer-selected')) {
 							this.originalLabel = this.label;
@@ -85,6 +90,9 @@ html
 							this.$.labelInput.blur();
 							break;
 						}
+					},
+					update: function() {
+						this.$.collapseComp.update();
 					}
 				});
 
@@ -171,11 +179,13 @@ html
 							{ icon: 'settings', label: 'Hello' }
 						]
 					},
-					ready: function() {
-						var self = this;
-					},
 					addItem: function(item) {
 						this.model.items.push(item);
+
+						Platform.performMicrotaskCheckpoint();
+
+						// Resize flow size
+						this.$.flownote_flow.update();
 					}
 				});
 
