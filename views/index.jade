@@ -47,16 +47,31 @@ html
 			script
 
 				Polymer('flownote-flow-submenu', {
+					editmode: false,
 					active: false,
 					ready: function() {
 						var self = this;
 						self.$.labelInput.addEventListener('blur', function(e) {
-							self.$.labelItem.className = '';
-							self.$.labelInput.className = 'hide';
+							self.editmode = false;
 						});
 					},
 					labelChanged: function() {
 						
+					},
+					editmodeChanged: function() {
+
+						if (this.editmode) {
+							this.originalLabel = this.label;
+							this.$.labelItem.className = 'hide';
+							this.$.labelInput.className = '';
+							this.$.labelInput.select();
+							this.$.labelInput.focus();
+						} else {
+							this.$.labelItem.className = '';
+							this.$.labelInput.className = 'hide';
+						}
+
+						this.fire('editmode', { enabled: this.editmode });
 					},
 					activate: function() {
 					/*
@@ -70,11 +85,7 @@ html
 					*/
 						// Switch to editmode
 						if ($(this).hasClass('polymer-selected')) {
-							this.originalLabel = this.label;
-							this.$.labelItem.className = 'hide';
-							this.$.labelInput.className = '';
-							this.$.labelInput.select();
-							this.$.labelInput.focus();
+							this.editmode = true;
 						}
 					},
 					keyup: function(e) {
@@ -119,28 +130,39 @@ html
 
 			script
 				Polymer('flownote-flow-item', {
+					editmode: false,
 					icon: null,
 					label: null,
 					active: null,
 					ready: function() {
 						var self = this;
 						self.$.labelInput.addEventListener('blur', function(e) {
-							self.$.labelItem.className = '';
-							self.$.labelInput.className = 'hide';
+							self.editmode = false;
 						});
 					},
 					labelChanged: function() {
 						
 					},
-					setFocus: function() {
+					editmodeChanged: function() {
 
-						// Switch to editmode
-						if ($(this).hasClass('polymer-selected')) {
+						if (this.editmode) {
 							this.originalLabel = this.label;
 							this.$.labelItem.className = 'hide';
 							this.$.labelInput.className = '';
 							this.$.labelInput.select();
 							this.$.labelInput.focus();
+						} else {
+							this.$.labelItem.className = '';
+							this.$.labelInput.className = 'hide';
+						}
+
+						this.fire('editmode', { enabled: this.editmode });
+					},
+					setFocus: function() {
+
+						// Switch to editmode
+						if ($(this).hasClass('polymer-selected')) {
+							this.editmode = true;
 						}
 					},
 					keyup: function(e) {
@@ -164,20 +186,24 @@ html
 
 				polymer-ui-menu(theme='polymer-ui-dark-theme')
 
-					flownote-flow-submenu#flownote_flow(icon='tag', label='Subject', active)
+					flownote-flow-submenu#flownote_flow(icon='tag', label='Subject', active, on-editmode='setEditmode')
 
 						template(repeat='{{ model.items }}')
 
-							flownote-flow-item(icon='{{ icon }}', label='{{ label }}')
+							flownote-flow-item(icon='{{ icon }}', label='{{ label }}', on-editmode='setEditmode')
 
 			script
 
 				Polymer('flownote-flow', {
+					hookmode: false,
 					model: {
 						items: [
 							{ icon: 'settings', label: 'Hello' },
 							{ icon: 'settings', label: 'Hello' }
 						]
+					},
+					setEditmode: function(e) {
+						this.hookmode = e.detail.enabled;
 					},
 					addItem: function(item) {
 						this.model.items.push(item);
@@ -186,6 +212,11 @@ html
 
 						// Resize flow size
 						this.$.flownote_flow.update();
+					},
+					keyup: function(e) {
+						if (!this.hookmode && e.keyCode == 13) {
+							this.addItem({ icon: 'tag', label: 'Fred' });
+						}
 					}
 				});
 
@@ -199,8 +230,6 @@ html
 
 				// Initializing hotkey
 				$(window).on('keyup', function(e) {
-					if (e.keyCode == 13) {
-						flow.addItem({ icon: 'tag', label: 'Fred' });
-					}
+					flow.keyup(e);
 				});
 			});
