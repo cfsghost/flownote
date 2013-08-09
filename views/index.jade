@@ -216,14 +216,19 @@ html
 					keyup: function(e) {
 
 						if (!this.hookmode && e.keyCode == 13) {
+
 							// Add item at specific position
-							if (this.$.flownote_flow.selected == null) {
-								this.addItem(this.$.flownote_flow.hasItems() + 1, { icon: 'tag', label: 'Fred' });
-								this.$.flownote_flow.selected = this.$.flownote_flow.hasItems() + 1;
+							var flow = this.$.flownote_flow;
+							if (flow.selected == null) {
+								this.addItem(flow.hasItems() + 1, { icon: '', label: '' });
+								flow.selected = flow.hasItems() + 1;
 							} else {
-								this.addItem(this.$.flownote_flow.selected + 1, { icon: 'tag', label: 'Fred' });
-								this.$.flownote_flow.selected++;
+								this.addItem(flow.selected + 1, { icon: '', label: '' });
+								flow.selected++;
 							}
+
+							// Switch to edit mode automatically
+							flow.items[flow.selected].editmode = true;
 						}
 					}
 				});
